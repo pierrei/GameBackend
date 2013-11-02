@@ -10,7 +10,11 @@ import java.io.OutputStream;
  */
 public abstract class AbstractWebModule implements WebModule {
     void sendOkResponse(HttpExchange httpExchange, String response) throws IOException {
-        httpExchange.sendResponseHeaders(200, response.length());
+        sendResponse(httpExchange, 200, response);
+    }
+
+    void sendResponse(HttpExchange httpExchange, int responseCode, String response) throws IOException {
+        httpExchange.sendResponseHeaders(responseCode, response.length());
 
         OutputStream os = httpExchange.getResponseBody();
         os.write(response.getBytes());

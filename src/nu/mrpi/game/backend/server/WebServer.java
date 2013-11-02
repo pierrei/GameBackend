@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server;
 
 import com.sun.net.httpserver.HttpServer;
+import nu.mrpi.game.backend.server.modules.ModuleFactory;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -12,11 +13,13 @@ public class WebServer {
     private static final int SECONDS_TO_WAIT_BEFORE_STOPPING = 5;
 
     private ServerFactory serverFactory;
+    private ModuleFactory moduleFactory;
 
     private HttpServer httpServer;
 
-    public WebServer(final ServerFactory serverFactory) {
+    public WebServer(final ServerFactory serverFactory, final ModuleFactory moduleFactory) {
         this.serverFactory = serverFactory;
+        this.moduleFactory = moduleFactory;
     }
 
     public void startServer(int port) {
@@ -25,7 +28,7 @@ public class WebServer {
         try {
             httpServer = serverFactory.createHttpServer(port);
 
-            httpServer.createContext("/", new RequestHandler());
+            httpServer.createContext("/", new RequestHandler(moduleFactory.createModules()));
             httpServer.setExecutor(Executors.newCachedThreadPool());
 
             httpServer.start();

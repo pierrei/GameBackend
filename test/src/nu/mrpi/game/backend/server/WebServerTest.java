@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server;
 
 import com.sun.net.httpserver.HttpServer;
+import nu.mrpi.game.backend.server.modules.ModuleFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +24,16 @@ public class WebServerTest {
     private ServerFactory serverFactory;
 
     @Mock
+    private ModuleFactory moduleFactory;
+
+    @Mock
     private HttpServer httpServer;
 
     @Before
     public void setUp() throws Exception {
         when(serverFactory.createHttpServer(PORT)).thenReturn(httpServer);
 
-        server = new WebServer(serverFactory);
+        server = new WebServer(serverFactory, moduleFactory);
     }
 
     @Test
