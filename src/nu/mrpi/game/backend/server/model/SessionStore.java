@@ -5,6 +5,6 @@ package nu.mrpi.game.backend.server.model;
  */
 public class SessionStore {
     public String createSession(int userId) {
-        return "ID";
+        return "XKCDISAWESOME";
     }
 }
