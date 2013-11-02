@@ -1,19 +1,21 @@
 package nu.mrpi.game.backend.server.modules;
 
 import nu.mrpi.game.backend.server.HttpMethod;
+import nu.mrpi.game.backend.server.model.ScoreStore;
 import nu.mrpi.game.backend.server.model.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -23,10 +25,13 @@ import static org.mockito.Mockito.when;
 public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     private ScorePosterWebModule scorePoster;
 
+    @Mock
+    private ScoreStore scoreStore;
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        scorePoster = new ScorePosterWebModule(sessionStore);
+        scorePoster = new ScorePosterWebModule(sessionStore, scoreStore);
     }
 
     @Test
@@ -41,7 +46,7 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
 
     @Test
     public void handleRequestReturnsOkWithCorrectLevelIdAsBody() throws Exception {
-        addValidSessionForUser(10, "AAA");
+        addValidSessionForUser(5, "AAA");
         setUpRequestPath("/10/score?sessionkey=AAA");
         setUpRequestBody("1");
 
@@ -52,7 +57,7 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
 
     @Test
     public void handleRequestDeniesAccessForInvalidSessionKey() throws Exception {
-        setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestPath("/20/score?sessionkey=AAA");
         setUpRequestBody("");
 
         scorePoster.handleRequest(request);
@@ -63,7 +68,7 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     @Test
     public void handleRequestDeniesRequestWithEmptyBody() throws Exception {
         addValidSessionForUser(10, "AAA");
-        setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestPath("/30/score?sessionkey=AAA");
         setUpRequestBody("");
 
         scorePoster.handleRequest(request);
@@ -74,12 +79,24 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     @Test
     public void handleRequestDeniesRequestWithNonNumericBody() throws Exception {
         addValidSessionForUser(10, "AAA");
-        setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestPath("/40/score?sessionkey=AAA");
         setUpRequestBody("BB");
 
         scorePoster.handleRequest(request);
 
         verifyBadRequestSent();
+    }
+
+    @Test
+    public void handleRequestAddsScoreToALevel() throws Exception {
+        addValidSessionForUser(10, "AAA");
+        setUpRequestPath("/50/score?sessionkey=AAA");
+        setUpRequestBody("100");
+
+        scorePoster.handleRequest(request);
+
+        verifyOkSent("");
+        verify(scoreStore).addScore(100, 50, 10);
     }
 
     private void verifyBadRequestSent() throws IOException {

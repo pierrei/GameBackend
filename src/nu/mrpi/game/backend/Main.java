@@ -2,6 +2,7 @@ package nu.mrpi.game.backend;
 
 import nu.mrpi.game.backend.server.DefaultServerFactory;
 import nu.mrpi.game.backend.server.WebServer;
+import nu.mrpi.game.backend.server.model.ScoreStore;
 import nu.mrpi.game.backend.server.model.SessionStore;
 import nu.mrpi.game.backend.server.modules.ModuleFactory;
 import nu.mrpi.game.backend.server.utils.TimeProvider;
@@ -13,7 +14,8 @@ public class Main {
     private static final DefaultServerFactory serverFactory = new DefaultServerFactory();
     private static final TimeProvider timeProvider = new TimeProvider();
     private static final SessionStore sessionStore = new SessionStore(timeProvider);
-    private static final ModuleFactory moduleFactory = new ModuleFactory(sessionStore);
+    private static final ScoreStore scoreStore = new ScoreStore();
+    private static final ModuleFactory moduleFactory = new ModuleFactory(sessionStore, scoreStore);
 
     private static final WebServer webServer = new WebServer(serverFactory, moduleFactory);
 

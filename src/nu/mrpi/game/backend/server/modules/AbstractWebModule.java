@@ -38,7 +38,7 @@ public abstract class AbstractWebModule implements WebModule {
         throw new IllegalArgumentException("Could not find userId in path");
     }
 
-    boolean isValidId(long userId) {
+    boolean isValid31BitUnsignedInteger(long userId) {
         return userId >= 0 && userId <= MAX_USER_ID;
     }
 

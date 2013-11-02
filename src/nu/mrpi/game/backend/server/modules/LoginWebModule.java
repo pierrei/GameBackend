@@ -26,7 +26,7 @@ public class LoginWebModule extends AbstractWebModule {
         try {
             int userId = getIdFromURI(path, PATH_PATTERN);
             
-            return method.equals(HttpMethod.GET) && isValidId(userId);
+            return method.equals(HttpMethod.GET) && isValid31BitUnsignedInteger(userId);
         } catch (IllegalArgumentException e) {
             return false;
         }

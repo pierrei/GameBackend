@@ -2,6 +2,8 @@ package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
 import nu.mrpi.game.backend.server.HttpMethod;
+import nu.mrpi.game.backend.server.model.ScoreStore;
+import nu.mrpi.game.backend.server.model.Session;
 import nu.mrpi.game.backend.server.model.SessionStore;
 
 import java.io.IOException;
@@ -16,17 +18,19 @@ public class ScorePosterWebModule extends AbstractWebModule {
     private static final Pattern PATH_PATTERN = Pattern.compile(PATH_REGEXP);
 
     private SessionStore sessionStore;
+    private ScoreStore scoreStore;
 
-    public ScorePosterWebModule(final SessionStore sessionStore) {
+    public ScorePosterWebModule(final SessionStore sessionStore, ScoreStore scoreStore) {
         this.sessionStore = sessionStore;
+        this.scoreStore = scoreStore;
     }
 
     @Override
     public boolean handlesPath(HttpMethod method, URI path) {
         try {
-            int levelId = getIdFromURI(path, PATH_PATTERN);
+            int levelId = getLevelId(path);
 
-            return method.equals(HttpMethod.POST) && isValidId(levelId);
+            return method.equals(HttpMethod.POST) && isValid31BitUnsignedInteger(levelId);
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -36,13 +40,18 @@ public class ScorePosterWebModule extends AbstractWebModule {
     public void handleRequest(HttpExchange httpExchange) throws IOException {
         String sessionKey = getParameter(httpExchange, "sessionkey");
 
-        if (sessionStore.isSessionKeyValid(sessionKey)) {
-            int levelId = getIdFromBody(httpExchange);
+        Session session = sessionStore.getSession(sessionKey);
+        if (session != null) {
+            int score = getNumberFromBody(httpExchange);
 
-            if (!isValidId(levelId)) {
+            if (!isValid31BitUnsignedInteger(score)) {
                 sendResponse(httpExchange, 400, "Bad request");
                 return;
             }
+
+            int levelId = getLevelId(httpExchange.getRequestURI());
+
+            scoreStore.addScore(score, levelId, session.getUserId());
 
             sendOkResponse(httpExchange, "");
             return;
@@ -51,7 +60,11 @@ public class ScorePosterWebModule extends AbstractWebModule {
         sendResponse(httpExchange, 403, "Access denied");
     }
 
-    private int getIdFromBody(HttpExchange httpExchange) {
+    private int getLevelId(URI path) {
+        return getIdFromURI(path, PATH_PATTERN);
+    }
+
+    private int getNumberFromBody(HttpExchange httpExchange) {
         String body = getBody(httpExchange);
         try {
             return Integer.parseInt(body);
