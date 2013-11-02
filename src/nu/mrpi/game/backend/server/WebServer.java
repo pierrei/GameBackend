@@ -25,11 +25,11 @@ public class WebServer {
             httpServer = serverFactory.createHttpServer(port);
 
             httpServer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        log("Server started");
+            log("Server started");
+        } catch (IOException e) {
+            log("Server failed to start: " + e.getMessage());
+        }
     }
 
     public void stopServer() {
