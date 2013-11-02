@@ -8,6 +8,6 @@ import nu.mrpi.game.backend.server.WebServer;
  */
 public class Main {
     public static void main(String[] args) {
-        new WebServer(new DefaultServerFactory()).startServer();
+        new WebServer(new DefaultServerFactory()).startServer(8080);
     }
 }

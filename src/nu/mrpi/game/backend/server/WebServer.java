@@ -14,10 +14,10 @@ public class WebServer {
         this.serverFactory = serverFactory;
     }
 
-    public void startServer() {
+    public void startServer(int port) {
         log("Starting server..");
         try {
-            HttpServer httpServer = serverFactory.createHttpServer(8080);
+            HttpServer httpServer = serverFactory.createHttpServer(port);
             httpServer.start();
         } catch (IOException e) {
             e.printStackTrace();

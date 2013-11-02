@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +15,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class WebServerTest {
+    private static final int PORT = 8080;
+
     private WebServer server;
 
     @Mock
@@ -26,16 +27,16 @@ public class WebServerTest {
 
     @Before
     public void setUp() throws Exception {
-        when(serverFactory.createHttpServer(anyInt())).thenReturn(httpServer);
+        when(serverFactory.createHttpServer(PORT)).thenReturn(httpServer);
 
         server = new WebServer(serverFactory);
     }
 
     @Test
     public void testStartServer() throws Exception {
-        server.startServer();
+        server.startServer(PORT);
 
-        verify(serverFactory).createHttpServer(anyInt());
+        verify(serverFactory).createHttpServer(PORT);
         verify(httpServer).start();
     }
 }
