@@ -15,6 +15,8 @@ public class LoginWebModule extends AbstractWebModule {
     private static final String PATH_REGEXP = "^/(\\d+)/login$";
     private static final Pattern PATH_PATTERN = Pattern.compile(PATH_REGEXP);
 
+    private static final int MAX_USER_ID = ((int) Math.pow(2.0, 31.0)); // unsigned 31 bit integer
+
     private SessionStore sessionStore;
 
     public LoginWebModule(final SessionStore sessionStore) {
@@ -23,7 +25,13 @@ public class LoginWebModule extends AbstractWebModule {
 
     @Override
     public boolean handlesPath(URI path) {
-        return path.getRawPath().matches(PATH_REGEXP);
+        try {
+            int userId = getUserIdFromURI(path);
+            
+            return userId >= 0 && userId <= MAX_USER_ID;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override

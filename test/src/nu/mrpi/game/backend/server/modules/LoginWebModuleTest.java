@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class LoginWebModuleTest {
     private static final String SESSION_ID = "SESSIONID";
+    private static final long MAX_USER_ID = 2147483647L;
 
     private LoginWebModule loginModule;
 
@@ -50,8 +51,18 @@ public class LoginWebModuleTest {
     }
 
     @Test
-    public void handlesCorrectLoginUrlWithHugeUserId() throws Exception {
-        assertTrue(loginModule.handlesPath(new URI("/123123123/login")));
+    public void handlesCorrectLoginUrlWithLargestUserId() throws Exception {
+        assertTrue(loginModule.handlesPath(new URI("/" + MAX_USER_ID + "/login")));
+    }
+
+    @Test
+    public void doesNotHandleLoginUrlWithLargestUserIdPlusOne() throws Exception {
+        assertFalse(loginModule.handlesPath(new URI("/" + (MAX_USER_ID + 1L) + "/login")));
+    }
+
+    @Test
+    public void doesNotHandleLoginUrlWithNegativeUserId() throws Exception {
+        assertFalse(loginModule.handlesPath(new URI("/-123123123/login")));
     }
 
     @Test
