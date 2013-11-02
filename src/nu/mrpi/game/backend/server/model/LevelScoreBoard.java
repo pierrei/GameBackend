@@ -1,17 +1,22 @@
 package nu.mrpi.game.backend.server.model;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class LevelScoreBoard {
-    public void updateUserScore(int userId, int score) {
+    private Map<Integer, Integer> scores = new TreeMap<>();
 
+    public void updateUserScore(int userId, int score) {
+        Integer currentUserScore = scores.get(userId);
+        if (currentUserScore == null || score > currentUserScore) {
+            scores.put(userId, score);
+        }
     }
 
     public Map<Integer, Integer> getLevelScoreBoardAsMap() {
-        return Collections.emptyMap();
+        return scores;
     }
 }

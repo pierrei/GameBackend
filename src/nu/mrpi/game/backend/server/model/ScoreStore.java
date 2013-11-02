@@ -28,6 +28,7 @@ public class ScoreStore {
 
     public Map<Integer, Integer> getScores(int levelId) {
         System.out.println("Getting scores for level " + levelId);
+
         LevelScoreBoard levelScoreBoard = scoreBoard.get(levelId);
         if (levelScoreBoard != null) {
             return levelScoreBoard.getLevelScoreBoardAsMap();
