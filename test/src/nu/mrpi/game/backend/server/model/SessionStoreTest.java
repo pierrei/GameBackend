@@ -6,8 +6,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
@@ -34,6 +33,20 @@ public class SessionStoreTest {
         for (char c : session.toCharArray()) {
             assertTrue(c + " was not a uppercase letter", Character.isUpperCase(c));
         }
+    }
+
+    @Test
+    public void testGetSessionReturnsNullForUserWithoutSession() throws Exception {
+        assertNull(sessionStore.getSessionId(10));
+    }
+
+    @Test
+    public void testGetSessionReturnsPreviouslyGeneratedSessionIdForSameUser() throws Exception {
+        String firstSession = sessionStore.createSession(10);
+
+        String storedSession = sessionStore.getSessionId(10);
+
+        assertEquals(storedSession, firstSession);
     }
 
     @Test
