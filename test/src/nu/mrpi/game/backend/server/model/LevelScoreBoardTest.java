@@ -47,4 +47,14 @@ public class LevelScoreBoardTest {
         assertEquals((Integer) 10, scores.get(1));
         assertEquals((Integer) 20, scores.get(2));
     }
+
+    @Test
+    public void updateUserScoreStoresMaxFifteenUserScoreRecords() throws Exception {
+        for (int i = 1; i <= 20; i++) {
+            levelScoreBoard.updateUserScore(i, i + 10);
+        }
+
+        Map<Integer,Integer> scores = levelScoreBoard.getLevelScoreBoardAsMap();
+        assertEquals(15, scores.size());
+    }
 }

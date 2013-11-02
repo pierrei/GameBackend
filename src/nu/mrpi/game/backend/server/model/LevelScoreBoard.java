@@ -7,12 +7,16 @@ import java.util.TreeMap;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class LevelScoreBoard {
+    private static final int MAX_SCORES_PER_LEVEL = 15;
+
     private Map<Integer, Integer> scores = new TreeMap<>();
 
     public void updateUserScore(int userId, int score) {
         Integer currentUserScore = scores.get(userId);
         if (currentUserScore == null || score > currentUserScore) {
-            scores.put(userId, score);
+
+            if (scores.size() < MAX_SCORES_PER_LEVEL)
+                scores.put(userId, score);
         }
     }
 
