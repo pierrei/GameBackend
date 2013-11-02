@@ -6,8 +6,6 @@ import nu.mrpi.game.backend.server.model.SessionStore;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -44,24 +42,5 @@ public class ScorePosterWebModule extends AbstractWebModule {
         }
 
         sendResponse(httpExchange, 403, "Access denied");
-    }
-
-    private String getParameter(HttpExchange httpExchange, String parameter) {
-        Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
-
-        return parameters.get(parameter);
-    }
-
-    public Map<String, String> queryToMap(String query) {
-        Map<String, String> result = new HashMap<>();
-        for (String param : query.split("&")) {
-            String pair[] = param.split("=");
-            if (pair.length > 1) {
-                result.put(pair[0], pair[1]);
-            } else {
-                result.put(pair[0], "");
-            }
-        }
-        return result;
     }
 }

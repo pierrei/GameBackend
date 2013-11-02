@@ -5,6 +5,8 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,5 +38,24 @@ public abstract class AbstractWebModule implements WebModule {
 
     boolean isValidId(long userId) {
         return userId >= 0 && userId <= MAX_USER_ID;
+    }
+
+    String getParameter(HttpExchange httpExchange, String parameter) {
+        Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
+
+        return parameters.get(parameter);
+    }
+
+    Map<String, String> queryToMap(String query) {
+        Map<String, String> result = new HashMap<>();
+        for (String param : query.split("&")) {
+            String pair[] = param.split("=");
+            if (pair.length > 1) {
+                result.put(pair[0], pair[1]);
+            } else {
+                result.put(pair[0], "");
+            }
+        }
+        return result;
     }
 }
