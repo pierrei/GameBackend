@@ -34,7 +34,9 @@ public class WebServer {
 
     public void stopServer() {
         if (httpServer != null) {
+            log("Stopping server (waiting " + SECONDS_TO_WAIT_BEFORE_STOPPING + " seconds to finish existing connections)..");
             httpServer.stop(SECONDS_TO_WAIT_BEFORE_STOPPING);
+            log("Server stopped");
         }
     }
 
