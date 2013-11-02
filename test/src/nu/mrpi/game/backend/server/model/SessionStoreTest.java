@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SessionStoreTest {
     private static final long NOW = 1234567890L;
+    public static final int TEN_MINUTES_IN_SECONDS = 10 * 60;
     private SessionStore sessionStore;
 
     @Mock
@@ -78,7 +79,7 @@ public class SessionStoreTest {
     public void testCleanUpSessionsRemovesOldSession() throws Exception {
         sessionStore.createSession(10);
 
-        forwardClockInSeconds(10 * 60 + 1);
+        forwardClockInSeconds(TEN_MINUTES_IN_SECONDS + 1);
 
         sessionStore.cleanUpSessions();
 
@@ -89,13 +90,24 @@ public class SessionStoreTest {
     public void testCleanUpSessionsDoesNotRemoveAlmostTooOldSession() throws Exception {
         String sessionId = sessionStore.createSession(10);
 
-        forwardClockInSeconds(10 * 60 - 1);
+        forwardClockInSeconds(TEN_MINUTES_IN_SECONDS - 1);
 
         sessionStore.cleanUpSessions();
 
         String storedSessionId = sessionStore.getSessionId(10);
         assertNotNull(storedSessionId);
         assertEquals(storedSessionId, sessionId);
+    }
+
+    @Test
+    public void testGetSessionExpiresTooOldSession() throws Exception {
+        sessionStore.createSession(10);
+
+        forwardClockInSeconds(TEN_MINUTES_IN_SECONDS + 1);
+
+        String storedSession = sessionStore.getSessionId(10);
+
+        assertNull(storedSession);
     }
 
     private void forwardClockInSeconds(int seconds) {

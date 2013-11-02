@@ -35,7 +35,11 @@ public class SessionStore {
     public String getSessionId(int userId) {
         Session session = activeSessions.get(userId);
         if (session != null) {
-            return session.getSessionId();
+            if (!hasExpired(session)) {
+                return session.getSessionId();
+            } else {
+                activeSessions.remove(userId);
+            }
         }
         return null;
     }
