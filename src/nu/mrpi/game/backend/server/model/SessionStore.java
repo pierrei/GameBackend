@@ -27,27 +27,33 @@ public class SessionStore {
     public String createSession(int userId) {
         String sessionId = generateSessionId();
 
-        activeSessions.put(sessionId, new Session(userId, sessionId, timeProvider.now()));
+        synchronized (activeSessions) {
+            activeSessions.put(sessionId, new Session(userId, sessionId, timeProvider.now()));
+        }
 
         return sessionId;
     }
 
     public Session getSession(String sessionKey) {
-        Session session = activeSessions.get(sessionKey);
-        if (session != null) {
-            if (!hasExpired(session)) {
-                return session;
-            } else {
-                activeSessions.remove(sessionKey);
+        synchronized (activeSessions) {
+            Session session = activeSessions.get(sessionKey);
+            if (session != null) {
+                if (!hasExpired(session)) {
+                    return session;
+                } else {
+                    activeSessions.remove(sessionKey);
+                }
             }
         }
         return null;
     }
 
     public void cleanUpSessions() {
-        for (Session session : activeSessions.values()) {
-            if (hasExpired(session)) {
-                activeSessions.remove(session.getSessionKey());
+        synchronized (activeSessions) {
+            for (Session session : activeSessions.values()) {
+                if (hasExpired(session)) {
+                    activeSessions.remove(session.getSessionKey());
+                }
             }
         }
     }
