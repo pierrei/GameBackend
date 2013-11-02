@@ -20,7 +20,7 @@ public class ScoreStoreTest {
     public void testAddScoreAddsAScore() throws Exception {
         scoreStore.addScore(10, 1, 1000);
 
-        ScoreBoard scoreBoard = scoreStore.getScoreBoard(1);
-        assertNotNull(scoreBoard);
+        LevelScoreBoard levelScoreBoard = scoreStore.getScoreBoard(1);
+        assertNotNull(levelScoreBoard);
     }
 }

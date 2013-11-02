@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
-public class ScoreBoard {
+public class LevelScoreBoard {
     public void updateUserScore(int userId, int score) {
 
     }
