@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.model.SessionStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +11,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +24,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LoginWebModuleTest {
+    private static final String SESSION_ID = "SESSIONID";
 
     private LoginWebModule loginModule;
 
@@ -30,11 +34,14 @@ public class LoginWebModuleTest {
     @Mock
     private OutputStream outputStream;
 
+    @Mock
+    private SessionStore sessionStore;
 
     @Before
     public void setUp() throws Exception {
-        loginModule = new LoginWebModule();
+        loginModule = new LoginWebModule(sessionStore);
         when(request.getResponseBody()).thenReturn(outputStream);
+        when(sessionStore.createSession(anyInt())).thenReturn(SESSION_ID);
     }
 
     @Test
@@ -63,10 +70,21 @@ public class LoginWebModuleTest {
     }
 
     @Test
-    public void handleRequestReturnsOk() throws Exception {
+    public void handleGoodRequestCreatesSession() throws Exception {
+        setUpRequestURI("/10/login");
+
         loginModule.handleRequest(request);
 
-        verifyOkSent("Logged in!");
+        verifyOkSent(SESSION_ID);
+        verify(sessionStore).createSession(10);
+    }
+
+    private void setUpRequestURI(String path) {
+        try {
+            when(request.getRequestURI()).thenReturn(new URI(path));
+        } catch (URISyntaxException e) {
+            // Ignore
+        }
     }
 
     private void verifyOkSent(String responseBody) throws IOException {
