@@ -4,6 +4,9 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
@@ -19,5 +22,13 @@ public abstract class AbstractWebModule implements WebModule {
         OutputStream os = httpExchange.getResponseBody();
         os.write(response.getBytes());
         os.close();
+    }
+
+    int getUserIdFromURI(URI path, Pattern patternWithUserIdInIt) {
+        Matcher matcher = patternWithUserIdInIt.matcher(path.getRawPath());
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        throw new IllegalArgumentException("Could not find userId in path");
     }
 }
