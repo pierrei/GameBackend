@@ -25,13 +25,15 @@ public class SessionStore {
     }
 
     public String createSession(int userId) {
-        String sessionId = generateSessionId();
+        String sessionKey = generateSessionId();
 
         synchronized (activeSessions) {
-            activeSessions.put(sessionId, new Session(userId, sessionId, timeProvider.now()));
+            activeSessions.put(sessionKey, new Session(userId, sessionKey, timeProvider.now()));
         }
 
-        return sessionId;
+        System.out.println("Created session " + sessionKey + " for user " + userId);
+
+        return sessionKey;
     }
 
     public Session getSession(String sessionKey) {
