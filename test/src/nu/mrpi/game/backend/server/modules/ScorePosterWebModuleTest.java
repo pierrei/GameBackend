@@ -41,11 +41,11 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
 
     @Test
     public void handlesCorrectPathWithLargestUserId() throws Exception {
-        assertTrue(scorePoster.handlesPath(HttpMethod.POST, new URI("/" + MAX_USER_ID + "/score?sessionkey=AAA")));
+        assertTrue(scorePoster.handlesPath(HttpMethod.POST, new URI("/" + MAX_ID + "/score?sessionkey=AAA")));
     }
 
     @Test
-    public void handleRequestReturnsOkWithCorrectLevelIdAsBody() throws Exception {
+    public void handleRequestReturnsOkWithCorrectScoreAsBody() throws Exception {
         addValidSessionForUser(5, "AAA");
         setUpRequestPath("/10/score?sessionkey=AAA");
         setUpRequestBody("1");
@@ -116,7 +116,4 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
         when(sessionStore.isSessionKeyValid(sessionKey)).thenReturn(true);
     }
 
-    private void setUpRequestPath(String path) throws URISyntaxException {
-        when(request.getRequestURI()).thenReturn(new URI(path));
-    }
 }

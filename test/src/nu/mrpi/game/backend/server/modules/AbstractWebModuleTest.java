@@ -7,6 +7,8 @@ import org.mockito.Mock;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +17,7 @@ import static org.mockito.Mockito.when;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class AbstractWebModuleTest {
-    static final long MAX_USER_ID = 2147483647L;
+    static final long MAX_ID = 2147483647L;
 
     @Mock
     HttpExchange request;
@@ -39,5 +41,9 @@ public class AbstractWebModuleTest {
         verify(request).sendResponseHeaders(responseCode, responseBody.length());
         verify(outputStream).write(responseBody.getBytes());
         verify(outputStream).close();
+    }
+
+    protected void setUpRequestPath(String path) throws URISyntaxException {
+        when(request.getRequestURI()).thenReturn(new URI(path));
     }
 }

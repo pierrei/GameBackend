@@ -38,12 +38,12 @@ public class LoginWebModuleTest extends AbstractWebModuleTest {
 
     @Test
     public void handlesCorrectLoginUrlWithLargestUserId() throws Exception {
-        assertTrue(loginModule.handlesPath(HttpMethod.GET, new URI("/" + MAX_USER_ID + "/login")));
+        assertTrue(loginModule.handlesPath(HttpMethod.GET, new URI("/" + MAX_ID + "/login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithLargestUserIdPlusOne() throws Exception {
-        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/" + (MAX_USER_ID + 1L) + "/login")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/" + (MAX_ID + 1L) + "/login")));
     }
 
     @Test
@@ -73,19 +73,11 @@ public class LoginWebModuleTest extends AbstractWebModuleTest {
 
     @Test
     public void handleGoodRequestCreatesSession() throws Exception {
-        setUpRequestURI("/10/login");
+        setUpRequestPath("/10/login");
 
         loginModule.handleRequest(request);
 
         verifyOkSent(SESSION_ID);
         verify(sessionStore).createSession(10);
-    }
-
-    private void setUpRequestURI(String path) {
-        try {
-            when(request.getRequestURI()).thenReturn(new URI(path));
-        } catch (URISyntaxException e) {
-            // Ignore
-        }
     }
 }
