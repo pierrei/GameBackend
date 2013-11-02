@@ -3,6 +3,7 @@ package nu.mrpi.game.backend.server;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
@@ -23,6 +24,9 @@ public class WebServer {
 
         try {
             httpServer = serverFactory.createHttpServer(port);
+
+            httpServer.createContext("/", new RequestHandler());
+            httpServer.setExecutor(Executors.newCachedThreadPool());
 
             httpServer.start();
 
