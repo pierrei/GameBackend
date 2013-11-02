@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public abstract class AbstractWebModule implements WebModule {
+    static final int MAX_USER_ID = ((int) Math.pow(2.0, 31.0)); // unsigned 31 bit integer
+
     void sendOkResponse(HttpExchange httpExchange, String response) throws IOException {
         sendResponse(httpExchange, 200, response);
     }
@@ -30,5 +32,9 @@ public abstract class AbstractWebModule implements WebModule {
             return Integer.parseInt(matcher.group(1));
         }
         throw new IllegalArgumentException("Could not find userId in path");
+    }
+
+    boolean isValidUserId(long userId) {
+        return userId >= 0 && userId <= MAX_USER_ID;
     }
 }
