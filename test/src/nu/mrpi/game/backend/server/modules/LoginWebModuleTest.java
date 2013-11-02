@@ -1,11 +1,9 @@
 package nu.mrpi.game.backend.server.modules;
 
 import nu.mrpi.game.backend.server.HttpMethod;
-import nu.mrpi.game.backend.server.model.SessionStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.net.URI;
