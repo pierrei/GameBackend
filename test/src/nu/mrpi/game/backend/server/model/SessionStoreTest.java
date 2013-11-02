@@ -3,7 +3,11 @@ package nu.mrpi.game.backend.server.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
@@ -28,7 +32,20 @@ public class SessionStoreTest {
         String session = sessionStore.createSession(10);
 
         for (char c : session.toCharArray()) {
-            assertTrue(Character.isUpperCase(c));
+            assertTrue(c + " was not a uppercase letter", Character.isUpperCase(c));
+        }
+    }
+
+    @Test
+    public void testCreateSessionGeneratesUniqueIds() throws Exception {
+        Set<String> generatedSessionIds = new HashSet<>();
+
+        for (int i = 0; i < 100000; i++) {
+            String session = sessionStore.createSession(i);
+            if (generatedSessionIds.contains(session)) {
+                fail("Generated key \"" + session + "\" already generated before");
+            }
+            generatedSessionIds.add(session);
         }
     }
 }
