@@ -16,6 +16,6 @@ public class ModuleFactory {
     }
 
     public List<WebModule> createModules() {
-        return Arrays.<WebModule>asList(new LoginWebModule(sessionStore));
+        return Arrays.<WebModule>asList(new LoginWebModule(sessionStore), new ScorePosterWebModule(sessionStore));
     }
 }

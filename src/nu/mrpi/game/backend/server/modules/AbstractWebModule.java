@@ -26,7 +26,7 @@ public abstract class AbstractWebModule implements WebModule {
         os.close();
     }
 
-    int getUserIdFromURI(URI path, Pattern patternWithUserIdInIt) {
+    int getIdFromURI(URI path, Pattern patternWithUserIdInIt) {
         Matcher matcher = patternWithUserIdInIt.matcher(path.getRawPath());
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
@@ -34,7 +34,7 @@ public abstract class AbstractWebModule implements WebModule {
         throw new IllegalArgumentException("Could not find userId in path");
     }
 
-    boolean isValidUserId(long userId) {
+    boolean isValidId(long userId) {
         return userId >= 0 && userId <= MAX_USER_ID;
     }
 }

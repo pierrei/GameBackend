@@ -6,6 +6,8 @@ import nu.mrpi.game.backend.server.model.SessionStore;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -24,9 +26,9 @@ public class ScorePosterWebModule extends AbstractWebModule {
     @Override
     public boolean handlesPath(HttpMethod method, URI path) {
         try {
-            int userId = getUserIdFromURI(path, PATH_PATTERN);
+            int levelId = getIdFromURI(path, PATH_PATTERN);
 
-            return method.equals(HttpMethod.POST) && isValidUserId(userId);
+            return method.equals(HttpMethod.POST) && isValidId(levelId);
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -34,13 +36,32 @@ public class ScorePosterWebModule extends AbstractWebModule {
 
     @Override
     public void handleRequest(HttpExchange httpExchange) throws IOException {
-        Object sessionKey = httpExchange.getAttribute("sessionkey");
+        String sessionKey = getParameter(httpExchange, "sessionkey");
 
-        if (sessionKey != null && sessionStore.isSessionKeyValid(sessionKey.toString())) {
+        if (sessionStore.isSessionKeyValid(sessionKey)) {
             sendOkResponse(httpExchange, "");
             return;
         }
 
         sendResponse(httpExchange, 403, "Access denied");
+    }
+
+    private String getParameter(HttpExchange httpExchange, String parameter) {
+        Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
+
+        return parameters.get(parameter);
+    }
+
+    public Map<String, String> queryToMap(String query) {
+        Map<String, String> result = new HashMap<>();
+        for (String param : query.split("&")) {
+            String pair[] = param.split("=");
+            if (pair.length > 1) {
+                result.put(pair[0], pair[1]);
+            } else {
+                result.put(pair[0], "");
+            }
+        }
+        return result;
     }
 }

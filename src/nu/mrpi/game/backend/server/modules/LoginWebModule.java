@@ -24,9 +24,9 @@ public class LoginWebModule extends AbstractWebModule {
     @Override
     public boolean handlesPath(HttpMethod method, URI path) {
         try {
-            int userId = getUserIdFromURI(path, PATH_PATTERN);
+            int userId = getIdFromURI(path, PATH_PATTERN);
             
-            return method.equals(HttpMethod.GET) && isValidUserId(userId);
+            return method.equals(HttpMethod.GET) && isValidId(userId);
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -34,7 +34,7 @@ public class LoginWebModule extends AbstractWebModule {
 
     @Override
     public void handleRequest(HttpExchange request) throws IOException {
-        int userId = getUserIdFromURI(request.getRequestURI(), PATH_PATTERN);
+        int userId = getIdFromURI(request.getRequestURI(), PATH_PATTERN);
 
         sendOkResponse(request, sessionStore.createSession(userId));
     }

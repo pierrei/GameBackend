@@ -41,7 +41,6 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     public void handleRequestReturnsOkWithEmptyBody() throws Exception {
         addValidSessionForUser(10, "AAA");
         setUpRequestPath("/10/score?sessionkey=AAA");
-        setUpRequestAttribute("sessionkey", "AAA");
 
         scorePoster.handleRequest(request);
 
@@ -68,9 +67,5 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
 
     private void setUpRequestPath(String path) throws URISyntaxException {
         when(request.getRequestURI()).thenReturn(new URI(path));
-    }
-
-    private void setUpRequestAttribute(String key, String value) {
-        when(request.getAttribute(key)).thenReturn(value);
     }
 }
