@@ -1,19 +1,17 @@
 package nu.mrpi.game.backend.server.model;
 
-import java.util.Date;
-
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class Session {
     private int userId;
-    private String sessionId;
+    private String sessionKey;
     private long createTime;
 
-    public Session(int userId, String sessionId, long createTime) {
+    public Session(int userId, String sessionKey, long createTime) {
 
         this.userId = userId;
-        this.sessionId = sessionId;
+        this.sessionKey = sessionKey;
         this.createTime = createTime;
     }
 
@@ -21,8 +19,8 @@ public class Session {
         return userId;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSessionKey() {
+        return sessionKey;
     }
 
     public long getCreateTime() {

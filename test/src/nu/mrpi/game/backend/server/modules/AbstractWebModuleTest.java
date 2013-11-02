@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.model.SessionStore;
 import org.junit.Before;
 import org.mockito.Mock;
 
@@ -22,13 +23,20 @@ public class AbstractWebModuleTest {
     @Mock
     OutputStream outputStream;
 
+    @Mock
+    SessionStore sessionStore;
+
     @Before
     public void setUp() throws Exception {
         when(request.getResponseBody()).thenReturn(outputStream);
     }
 
     void verifyOkSent(String responseBody) throws IOException {
-        verify(request).sendResponseHeaders(200, responseBody.length());
+        verifySent(200, responseBody);
+    }
+
+    void verifySent(int responseCode, String responseBody) throws IOException {
+        verify(request).sendResponseHeaders(responseCode, responseBody.length());
         verify(outputStream).write(responseBody.getBytes());
         verify(outputStream).close();
     }

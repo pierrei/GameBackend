@@ -16,7 +16,7 @@ public class SessionStore {
 
     private static final Random random = new Random();
 
-    private final Map<Integer, Session> activeSessions = new HashMap<>();
+    private final Map<String, Session> activeSessions = new HashMap<>();
 
     private final TimeProvider timeProvider;
 
@@ -27,18 +27,18 @@ public class SessionStore {
     public String createSession(int userId) {
         String sessionId = generateSessionId();
 
-        activeSessions.put(userId, new Session(userId, sessionId, timeProvider.now()));
+        activeSessions.put(sessionId, new Session(userId, sessionId, timeProvider.now()));
 
         return sessionId;
     }
 
-    public String getSessionId(int userId) {
-        Session session = activeSessions.get(userId);
+    public Session getSession(String sessionKey) {
+        Session session = activeSessions.get(sessionKey);
         if (session != null) {
             if (!hasExpired(session)) {
-                return session.getSessionId();
+                return session;
             } else {
-                activeSessions.remove(userId);
+                activeSessions.remove(sessionKey);
             }
         }
         return null;
@@ -47,7 +47,7 @@ public class SessionStore {
     public void cleanUpSessions() {
         for (Session session : activeSessions.values()) {
             if (hasExpired(session)) {
-                activeSessions.remove(session.getUserId());
+                activeSessions.remove(session.getSessionKey());
             }
         }
     }
@@ -63,5 +63,9 @@ public class SessionStore {
             stringBuilder.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
 
         return stringBuilder.toString();
+    }
+
+    public boolean isSessionKeyValid(String sessionKey) {
+        return getSession(sessionKey) != null;
     }
 }

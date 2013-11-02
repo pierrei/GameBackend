@@ -49,17 +49,18 @@ public class SessionStoreTest {
     }
 
     @Test
-    public void testGetSessionReturnsNullForUserWithoutSession() throws Exception {
-        assertNull(sessionStore.getSessionId(10));
+    public void testGetSessionReturnsNullForNonExistingSession() throws Exception {
+        assertNull(sessionStore.getSession("AAAAAAAA"));
     }
 
     @Test
-    public void testGetSessionReturnsPreviouslyGeneratedSessionIdForSameUser() throws Exception {
-        String firstSession = sessionStore.createSession(10);
+    public void testGetSessionReturnsPreviouslyGeneratedSession() throws Exception {
+        String sessionKey = sessionStore.createSession(10);
 
-        String storedSession = sessionStore.getSessionId(10);
+        Session storedSession = sessionStore.getSession(sessionKey);
 
-        assertEquals(storedSession, firstSession);
+        assertNotNull(storedSession);
+        assertEquals(storedSession.getSessionKey(), sessionKey);
     }
 
     @Test
@@ -77,37 +78,44 @@ public class SessionStoreTest {
 
     @Test
     public void testCleanUpSessionsRemovesOldSession() throws Exception {
-        sessionStore.createSession(10);
+        String sessionKey = sessionStore.createSession(10);
 
         forwardClockInSeconds(TEN_MINUTES_IN_SECONDS + 1);
 
         sessionStore.cleanUpSessions();
 
-        assertNull("No session should exist for user", sessionStore.getSessionId(10));
+        assertNull("No session should exist for user", sessionStore.getSession(sessionKey));
     }
 
     @Test
     public void testCleanUpSessionsDoesNotRemoveAlmostTooOldSession() throws Exception {
-        String sessionId = sessionStore.createSession(10);
+        String sessionKey = sessionStore.createSession(10);
 
         forwardClockInSeconds(TEN_MINUTES_IN_SECONDS - 1);
 
         sessionStore.cleanUpSessions();
 
-        String storedSessionId = sessionStore.getSessionId(10);
-        assertNotNull(storedSessionId);
-        assertEquals(storedSessionId, sessionId);
+        Session storedSession = sessionStore.getSession(sessionKey);
+        assertNotNull(storedSession);
+        assertEquals(storedSession.getSessionKey(), sessionKey);
     }
 
     @Test
     public void testGetSessionExpiresTooOldSession() throws Exception {
-        sessionStore.createSession(10);
+        String sessionKey = sessionStore.createSession(10);
 
         forwardClockInSeconds(TEN_MINUTES_IN_SECONDS + 1);
 
-        String storedSession = sessionStore.getSessionId(10);
+        Session storedSession = sessionStore.getSession(sessionKey);
 
         assertNull(storedSession);
+    }
+
+    @Test
+    public void testIsSessionKeyValidReturnsTrueForValidSession() throws Exception {
+        String sessionKey = sessionStore.createSession(10);
+
+        assertTrue(sessionStore.isSessionKeyValid(sessionKey));
     }
 
     private void forwardClockInSeconds(int seconds) {

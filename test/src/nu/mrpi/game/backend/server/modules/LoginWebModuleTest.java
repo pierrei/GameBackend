@@ -26,9 +26,6 @@ public class LoginWebModuleTest extends AbstractWebModuleTest {
 
     private LoginWebModule loginModule;
 
-    @Mock
-    private SessionStore sessionStore;
-
     @Before
     public void setUp() throws Exception {
         super.setUp();
