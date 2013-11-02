@@ -1,5 +1,7 @@
 package nu.mrpi.game.backend.server.model;
 
+import nu.mrpi.game.backend.server.utils.TimeProvider;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -9,18 +11,45 @@ import java.util.Random;
  */
 public class SessionStore {
     static final String ALLOWED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static final long SESSION_EXPIRATION_TIME = 10 * 60 * 1000;
     static final int SESSION_ID_LENGTH = 8;
 
-    static final Random random = new Random();
+    private static final Random random = new Random();
 
-    private final Map<Integer, String> activeSessions = new HashMap<>();
+    private final Map<Integer, Session> activeSessions = new HashMap<>();
+
+    private final TimeProvider timeProvider;
+
+    public SessionStore(final TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     public String createSession(int userId) {
         String sessionId = generateSessionId();
 
-        activeSessions.put(userId, sessionId);
+        activeSessions.put(userId, new Session(userId, sessionId, timeProvider.now()));
 
         return sessionId;
+    }
+
+    public String getSessionId(int userId) {
+        Session session = activeSessions.get(userId);
+        if (session != null) {
+            return session.getSessionId();
+        }
+        return null;
+    }
+
+    public void cleanUpSessions() {
+        for (Session session : activeSessions.values()) {
+            if (hasExpired(session)) {
+                activeSessions.remove(session.getUserId());
+            }
+        }
+    }
+
+    private boolean hasExpired(Session session) {
+        return timeProvider.now() >= session.getCreateTime() + SESSION_EXPIRATION_TIME;
     }
 
     private String generateSessionId() {
@@ -30,9 +59,5 @@ public class SessionStore {
             stringBuilder.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
 
         return stringBuilder.toString();
-    }
-
-    public String getSessionId(int userId) {
-        return activeSessions.get(userId);
     }
 }

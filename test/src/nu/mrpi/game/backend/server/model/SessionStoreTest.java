@@ -1,22 +1,34 @@
 package nu.mrpi.game.backend.server.model;
 
+import nu.mrpi.game.backend.server.utils.TimeProvider;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SessionStoreTest {
+    private static final long NOW = 1234567890L;
     private SessionStore sessionStore;
+
+    @Mock
+    private TimeProvider timeProvider;
 
     @Before
     public void setUp() throws Exception {
-        sessionStore = new SessionStore();
+        when(timeProvider.now()).thenReturn(NOW);
+
+        sessionStore = new SessionStore(timeProvider);
     }
 
     @Test
@@ -60,5 +72,33 @@ public class SessionStoreTest {
             }
             generatedSessionIds.add(session);
         }
+    }
+
+    @Test
+    public void testCleanUpSessionsRemovesOldSession() throws Exception {
+        sessionStore.createSession(10);
+
+        forwardClockInSeconds(10 * 60 + 1);
+
+        sessionStore.cleanUpSessions();
+
+        assertNull("No session should exist for user", sessionStore.getSessionId(10));
+    }
+
+    @Test
+    public void testCleanUpSessionsDoesNotRemoveAlmostTooOldSession() throws Exception {
+        String sessionId = sessionStore.createSession(10);
+
+        forwardClockInSeconds(10 * 60 - 1);
+
+        sessionStore.cleanUpSessions();
+
+        String storedSessionId = sessionStore.getSessionId(10);
+        assertNotNull(storedSessionId);
+        assertEquals(storedSessionId, sessionId);
+    }
+
+    private void forwardClockInSeconds(int seconds) {
+        when(timeProvider.now()).thenReturn(NOW + (seconds * 1000));
     }
 }
