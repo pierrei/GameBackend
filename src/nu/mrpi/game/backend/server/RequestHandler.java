@@ -23,7 +23,7 @@ public class RequestHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         for (WebModule module : modules) {
-            if (module.handlesPath(httpExchange.getRequestURI())) {
+            if (module.handlesPath(HttpMethod.fromHttpExchange(httpExchange), httpExchange.getRequestURI())) {
                 module.handleRequest(httpExchange);
                 return;
             }

@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.HttpMethod;
 import nu.mrpi.game.backend.server.model.SessionStore;
 
 import java.io.IOException;
@@ -24,11 +25,11 @@ public class LoginWebModule extends AbstractWebModule {
     }
 
     @Override
-    public boolean handlesPath(URI path) {
+    public boolean handlesPath(HttpMethod method, URI path) {
         try {
             int userId = getUserIdFromURI(path);
             
-            return userId >= 0 && userId <= MAX_USER_ID;
+            return method.equals(HttpMethod.GET) && userId >= 0 && userId <= MAX_USER_ID;
         } catch (IllegalArgumentException e) {
             return false;
         }

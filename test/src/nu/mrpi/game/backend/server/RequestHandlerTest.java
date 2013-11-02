@@ -32,6 +32,7 @@ public class RequestHandlerTest {
     @Before
     public void setUp() throws Exception {
         when(request.getResponseBody()).thenReturn(outputStream);
+        when(request.getRequestMethod()).thenReturn(HttpMethod.GET.toString());
     }
 
     @Test
@@ -94,7 +95,8 @@ public class RequestHandlerTest {
 
     private WebModule createModule(boolean accepting) {
         WebModule webModule = mock(WebModule.class);
-        when(webModule.handlesPath(Matchers.<URI>anyObject())).thenReturn(accepting);
+        when(webModule.handlesPath(Matchers.<HttpMethod>anyObject(),
+                Matchers.<URI>anyObject())).thenReturn(accepting);
         return webModule;
     }
 }

@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.HttpMethod;
 import nu.mrpi.game.backend.server.model.SessionStore;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,37 +48,42 @@ public class LoginWebModuleTest {
 
     @Test
     public void handlesCorrectLoginUrl() throws Exception {
-        assertTrue(loginModule.handlesPath(new URI("/1/login")));
+        assertTrue(loginModule.handlesPath(HttpMethod.GET, new URI("/1/login")));
     }
 
     @Test
     public void handlesCorrectLoginUrlWithLargestUserId() throws Exception {
-        assertTrue(loginModule.handlesPath(new URI("/" + MAX_USER_ID + "/login")));
+        assertTrue(loginModule.handlesPath(HttpMethod.GET, new URI("/" + MAX_USER_ID + "/login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithLargestUserIdPlusOne() throws Exception {
-        assertFalse(loginModule.handlesPath(new URI("/" + (MAX_USER_ID + 1L) + "/login")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/" + (MAX_USER_ID + 1L) + "/login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithNegativeUserId() throws Exception {
-        assertFalse(loginModule.handlesPath(new URI("/-123123123/login")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/-123123123/login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithoutUserId() throws Exception {
-        assertFalse(loginModule.handlesPath(new URI("//login")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("//login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithUserIdThatIsNotANumber() throws Exception {
-        assertFalse(loginModule.handlesPath(new URI("/user/login")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/user/login")));
     }
 
     @Test
     public void doesNotHandleLoginUrlWithTrailingSlash() throws Exception {
-        assertFalse(loginModule.handlesPath(new URI("/10/login/")));
+        assertFalse(loginModule.handlesPath(HttpMethod.GET, new URI("/10/login/")));
+    }
+
+    @Test
+    public void doesNotHandleLoginUrlWithWrongMethod() throws Exception {
+        assertFalse(loginModule.handlesPath(HttpMethod.POST, new URI("/10/login")));
     }
 
     @Test

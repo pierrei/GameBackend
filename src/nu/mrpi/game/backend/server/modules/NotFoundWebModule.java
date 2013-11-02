@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.HttpMethod;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,7 +11,7 @@ import java.net.URI;
  */
 public class NotFoundWebModule extends AbstractWebModule {
     @Override
-    public boolean handlesPath(URI path) {
+    public boolean handlesPath(HttpMethod method, URI path) {
         return true;
     }
 
