@@ -39,4 +39,12 @@ public class WebServerTest {
         verify(serverFactory).createHttpServer(PORT);
         verify(httpServer).start();
     }
+
+    @Test
+    public void testStopServer() throws Exception {
+        server.startServer(PORT);
+        server.stopServer();
+
+        verify(httpServer).stop(5);
+    }
 }
