@@ -15,12 +15,17 @@ public class WebServer {
     }
 
     public void startServer() {
-        System.out.println("Starting server..");
+        log("Starting server..");
         try {
             HttpServer httpServer = serverFactory.createHttpServer(8080);
             httpServer.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log("Server started");
+    }
+
+    private void log(String line) {
+        System.out.println(line);
     }
 }
