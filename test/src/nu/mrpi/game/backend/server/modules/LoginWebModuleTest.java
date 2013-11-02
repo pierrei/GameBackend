@@ -1,6 +1,5 @@
 package nu.mrpi.game.backend.server.modules;
 
-import com.sun.net.httpserver.HttpExchange;
 import nu.mrpi.game.backend.server.HttpMethod;
 import nu.mrpi.game.backend.server.model.SessionStore;
 import org.junit.Before;
@@ -9,8 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -24,25 +21,18 @@ import static org.mockito.Mockito.when;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LoginWebModuleTest {
+public class LoginWebModuleTest extends AbstractWebModuleTest {
     private static final String SESSION_ID = "SESSIONID";
-    private static final long MAX_USER_ID = 2147483647L;
 
     private LoginWebModule loginModule;
-
-    @Mock
-    private HttpExchange request;
-
-    @Mock
-    private OutputStream outputStream;
 
     @Mock
     private SessionStore sessionStore;
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         loginModule = new LoginWebModule(sessionStore);
-        when(request.getResponseBody()).thenReturn(outputStream);
         when(sessionStore.createSession(anyInt())).thenReturn(SESSION_ID);
     }
 
@@ -102,11 +92,5 @@ public class LoginWebModuleTest {
         } catch (URISyntaxException e) {
             // Ignore
         }
-    }
-
-    private void verifyOkSent(String responseBody) throws IOException {
-        verify(request).sendResponseHeaders(200, responseBody.length());
-        verify(outputStream).write(responseBody.getBytes());
-        verify(outputStream).close();
     }
 }

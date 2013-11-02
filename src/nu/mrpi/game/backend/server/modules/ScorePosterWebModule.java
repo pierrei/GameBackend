@@ -27,6 +27,6 @@ public class ScorePosterWebModule extends AbstractWebModule {
 
     @Override
     public void handleRequest(HttpExchange httpExchange) throws IOException {
-
+        sendOkResponse(httpExchange, "");
     }
 }
