@@ -12,6 +12,7 @@ public class ScoreStore {
     }
 
     public Map<Integer, Integer> getScores(int levelId) {
+        System.out.println("Getting scores for level " + levelId);
         return Collections.emptyMap();
     }
 }
