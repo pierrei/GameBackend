@@ -7,7 +7,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -38,9 +40,10 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     }
 
     @Test
-    public void handleRequestReturnsOkWithEmptyBody() throws Exception {
+    public void handleRequestReturnsOkWithCorrectLevelIdAsBody() throws Exception {
         addValidSessionForUser(10, "AAA");
         setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestBody("1");
 
         scorePoster.handleRequest(request);
 
@@ -50,10 +53,41 @@ public class ScorePosterWebModuleTest extends AbstractWebModuleTest {
     @Test
     public void handleRequestDeniesAccessForInvalidSessionKey() throws Exception {
         setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestBody("");
 
         scorePoster.handleRequest(request);
 
         verifyAccessDeniedSent();
+    }
+
+    @Test
+    public void handleRequestDeniesRequestWithEmptyBody() throws Exception {
+        addValidSessionForUser(10, "AAA");
+        setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestBody("");
+
+        scorePoster.handleRequest(request);
+
+        verifyBadRequestSent();
+    }
+
+    @Test
+    public void handleRequestDeniesRequestWithNonNumericBody() throws Exception {
+        addValidSessionForUser(10, "AAA");
+        setUpRequestPath("/10/score?sessionkey=AAA");
+        setUpRequestBody("BB");
+
+        scorePoster.handleRequest(request);
+
+        verifyBadRequestSent();
+    }
+
+    private void verifyBadRequestSent() throws IOException {
+        verifySent(400, "Bad request");
+    }
+
+    private void setUpRequestBody(String body) {
+        when(request.getRequestBody()).thenReturn(new ByteArrayInputStream(body.getBytes()));
     }
 
     private void verifyAccessDeniedSent() throws IOException {

@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,14 @@ public abstract class AbstractWebModule implements WebModule {
 
     boolean isValidId(long userId) {
         return userId >= 0 && userId <= MAX_USER_ID;
+    }
+
+    String getBody(HttpExchange httpExchange) {
+        try {
+            return new Scanner(httpExchange.getRequestBody(), "UTF-8").next();
+        } catch (NoSuchElementException e) {
+            return "";
+        }
     }
 
     String getParameter(HttpExchange httpExchange, String parameter) {

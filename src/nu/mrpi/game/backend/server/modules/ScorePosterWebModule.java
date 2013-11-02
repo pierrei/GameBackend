@@ -37,10 +37,26 @@ public class ScorePosterWebModule extends AbstractWebModule {
         String sessionKey = getParameter(httpExchange, "sessionkey");
 
         if (sessionStore.isSessionKeyValid(sessionKey)) {
+            int levelId = getIdFromBody(httpExchange);
+
+            if (!isValidId(levelId)) {
+                sendResponse(httpExchange, 400, "Bad request");
+                return;
+            }
+
             sendOkResponse(httpExchange, "");
             return;
         }
 
         sendResponse(httpExchange, 403, "Access denied");
+    }
+
+    private int getIdFromBody(HttpExchange httpExchange) {
+        String body = getBody(httpExchange);
+        try {
+            return Integer.parseInt(body);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }
