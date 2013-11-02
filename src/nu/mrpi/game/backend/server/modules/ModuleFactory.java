@@ -8,6 +8,6 @@ import java.util.List;
  */
 public class ModuleFactory {
     public List<WebModule> createModules() {
-        return Arrays.<WebModule>asList(new NotFoundWebModule());
+        return Arrays.<WebModule>asList(new LoginWebModule());
     }
 }
