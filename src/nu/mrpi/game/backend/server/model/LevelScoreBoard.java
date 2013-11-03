@@ -8,20 +8,34 @@ import java.util.*;
 public class LevelScoreBoard {
     private static final int MAX_SCORES_PER_LEVEL = 15;
 
-    private LinkedList<UserScore> scoreboard = new LinkedList<>();
+    private final LinkedList<UserScore> scoreboard = new LinkedList<>();
+
+    public Map<Integer, Integer> getLevelScoreBoardAsMap() {
+        Map<Integer, Integer> scoreboardMap = new LinkedHashMap<>(scoreboard.size());
+
+        synchronized (scoreboard) {
+            for (UserScore userScore : scoreboard) {
+                scoreboardMap.put(userScore.userId, userScore.score);
+            }
+        }
+
+        return scoreboardMap;
+    }
 
     public void updateUserScore(int userId, int score) {
-        int currentUserScore = getUserScore(userId);
-        boolean hasCurrentScore = currentUserScore != -1;
+        synchronized (scoreboard) {
+            int currentUserScore = getUserScore(userId);
+            boolean hasCurrentScore = currentUserScore != -1;
 
-        if (hasCurrentScore) {
-            if (score > currentUserScore) {
-                replaceCurrentScore(userId, score);
+            if (hasCurrentScore) {
+                if (score > currentUserScore) {
+                    replaceCurrentScore(userId, score);
+                }
+            } else if (scoreboard.size() < MAX_SCORES_PER_LEVEL) {
+                addScore(userId, score);
+            } else {
+                replaceOthersScoreIfHigher(userId, score);
             }
-        } else if (scoreboard.size() < MAX_SCORES_PER_LEVEL) {
-            addScore(userId, score);
-        } else {
-            replaceOthersScoreIfHigher(userId, score);
         }
     }
 
@@ -67,13 +81,5 @@ public class LevelScoreBoard {
         if (scoreboard.size() > 1) {
             Collections.sort(scoreboard);
         }
-    }
-
-    public Map<Integer, Integer> getLevelScoreBoardAsMap() {
-        Map<Integer, Integer> scoreboardMap = new LinkedHashMap<>(scoreboard.size());
-        for (UserScore userScore : scoreboard) {
-            scoreboardMap.put(userScore.userId, userScore.score);
-        }
-        return scoreboardMap;
     }
 }

@@ -1,17 +1,16 @@
 package nu.mrpi.game.backend.server.model;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class ScoreStore {
-    Map<Integer, LevelScoreBoard> scoreBoard = new HashMap<>();
+    final Map<Integer, LevelScoreBoard> scoreBoard = new ConcurrentHashMap<>();
 
     public void addScore(int score, int level, int userId) {
-        System.out.println("Added score " + score + " for level " + level + " for user " + userId);
 
         LevelScoreBoard levelScoreBoard = scoreBoard.get(level);
         if (levelScoreBoard == null) {
