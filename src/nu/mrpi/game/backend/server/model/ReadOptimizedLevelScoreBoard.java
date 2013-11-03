@@ -8,39 +8,74 @@ import java.util.*;
 public class ReadOptimizedLevelScoreBoard implements LevelScoreBoard {
     private static final int MAX_SCORES_PER_LEVEL = 15;
 
-    private Map<Integer, Integer> scores = new LinkedHashMap<>(15);
+    private LinkedList<UserScore> scoreboard = new LinkedList<>();
 
     @Override
     public void updateUserScore(int userId, int score) {
-        Integer currentUserScore = scores.get(userId);
-        if (currentUserScore == null || score > currentUserScore) {
+        int currentUserScore = getUserScore(userId);
+        boolean hasCurrentScore = currentUserScore != -1;
 
-            if (scores.size() < MAX_SCORES_PER_LEVEL) {
-                scores.put(userId, score);
-                sortScores();
+        if (hasCurrentScore) {
+            if (score > currentUserScore) {
+                replaceCurrentScore(userId, score);
             }
-
+        } else if (scoreboard.size() < MAX_SCORES_PER_LEVEL) {
+            addScore(userId, score);
+        } else {
+            replaceOthersScoreIfHigher(userId, score);
         }
     }
 
-    private void sortScores() {
-        List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(scores.entrySet());
+    private void addScore(int userId, int score) {
+        scoreboard.add(new UserScore(userId, score));
+        sortScores();
+    }
 
-        Collections.sort(entries, new Comparator<Map.Entry<Integer, Integer>>() {
-            public int compare(Map.Entry<Integer, Integer> a, Map.Entry<Integer, Integer> b){
-                return b.getValue().compareTo(a.getValue());
+    private void replaceCurrentScore(int userId, int score) {
+        for (int i = 0, scoreboardSize = scoreboard.size(); i < scoreboardSize; i++) {
+            UserScore userScore = scoreboard.get(i);
+            if (userScore.userId == userId) {
+                scoreboard.set(i, new UserScore(userId, score));
             }
-        });
+        }
+        sortScores();
+    }
 
-        scores.clear();
+    private void replaceOthersScoreIfHigher(int userId, int score) {
+        if (getLowestScore() < score) {
+            scoreboard.removeLast();
+            addScore(userId, score);
+        }
+    }
 
-        for (Map.Entry<Integer, Integer> entry : entries) {
-            scores.put(entry.getKey(), entry.getValue());
+    private int getUserScore(int userId) {
+        for (UserScore userScore : scoreboard) {
+            if (userScore.userId == userId) {
+                return userScore.score;
+            }
+        }
+        return -1;
+    }
+
+    private int getLowestScore() {
+        if (scoreboard.size() > 0) {
+            return scoreboard.getLast().score;
+        }
+        return -1;
+    }
+
+    private void sortScores() {
+        if (scoreboard.size() > 1) {
+            Collections.sort(scoreboard);
         }
     }
 
     @Override
     public Map<Integer, Integer> getLevelScoreBoardAsMap() {
-        return scores;
+        Map<Integer, Integer> scoreboardMap = new LinkedHashMap<>(scoreboard.size());
+        for (UserScore userScore : scoreboard) {
+            scoreboardMap.put(userScore.userId, userScore.score);
+        }
+        return scoreboardMap;
     }
 }
