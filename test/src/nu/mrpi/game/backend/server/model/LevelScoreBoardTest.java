@@ -11,12 +11,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
-public class ReadOptimizedLevelScoreBoardTest {
+public class LevelScoreBoardTest {
     private LevelScoreBoard levelScoreBoard;
 
     @Before
     public void setUp() throws Exception {
-        levelScoreBoard = new ReadOptimizedLevelScoreBoard();
+        levelScoreBoard = new LevelScoreBoard();
     }
 
     @Test
