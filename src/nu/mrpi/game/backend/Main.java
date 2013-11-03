@@ -22,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
         registerShutdownHook();
 
-        webServer.startServer(8080);
+        webServer.startServer(8081);
     }
 
     private static void registerShutdownHook() {
