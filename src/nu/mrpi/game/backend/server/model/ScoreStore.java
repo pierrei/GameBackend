@@ -15,7 +15,7 @@ public class ScoreStore {
 
         LevelScoreBoard levelScoreBoard = scoreBoard.get(level);
         if (levelScoreBoard == null) {
-            levelScoreBoard = new LevelScoreBoard();
+            levelScoreBoard = new ReadOptimizedLevelScoreBoard();
             scoreBoard.put(level, levelScoreBoard);
         }
 
