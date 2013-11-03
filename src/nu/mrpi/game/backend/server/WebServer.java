@@ -10,8 +10,6 @@ import java.util.concurrent.Executors;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class WebServer {
-    private static final int SECONDS_TO_WAIT_BEFORE_STOPPING = 5;
-
     private ServerFactory serverFactory;
     private ModuleFactory moduleFactory;
 
@@ -41,8 +39,9 @@ public class WebServer {
 
     public void stopServer() {
         if (httpServer != null) {
-            log("Stopping server (waiting " + SECONDS_TO_WAIT_BEFORE_STOPPING + " seconds to finish existing connections)..");
-            httpServer.stop(SECONDS_TO_WAIT_BEFORE_STOPPING);
+            log("Stopping server (waiting " +
+                    Settings.SECONDS_TO_WAIT_BEFORE_STOPPING + " seconds to finish existing connections)..");
+            httpServer.stop(Settings.SECONDS_TO_WAIT_BEFORE_STOPPING);
             log("Server stopped");
         }
     }

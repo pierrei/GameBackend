@@ -1,13 +1,13 @@
 package nu.mrpi.game.backend.server.model;
 
+import nu.mrpi.game.backend.server.Settings;
+
 import java.util.*;
 
 /**
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public class LevelScoreBoard {
-    private static final int MAX_SCORES_PER_LEVEL = 15;
-
     private final LinkedList<UserScore> scoreboard = new LinkedList<>();
 
     public Map<Integer, Integer> getLevelScoreBoardAsMap() {
@@ -31,7 +31,7 @@ public class LevelScoreBoard {
                 if (score > currentUserScore) {
                     replaceCurrentScore(userId, score);
                 }
-            } else if (scoreboard.size() < MAX_SCORES_PER_LEVEL) {
+            } else if (scoreboard.size() < Settings.MAX_SCORES_PER_LEVEL) {
                 addScore(userId, score);
             } else {
                 replaceOthersScoreIfHigher(userId, score);

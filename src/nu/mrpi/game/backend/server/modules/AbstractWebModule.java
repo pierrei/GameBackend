@@ -1,6 +1,7 @@
 package nu.mrpi.game.backend.server.modules;
 
 import com.sun.net.httpserver.HttpExchange;
+import nu.mrpi.game.backend.server.Settings;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,8 +17,6 @@ import java.util.regex.Pattern;
  * @author Pierre Ingmansson (pierre@ingmansson.com)
  */
 public abstract class AbstractWebModule implements WebModule {
-    static final int MAX_USER_ID = ((int) Math.pow(2.0, 31.0)); // unsigned 31 bit integer
-
     void sendOkResponse(HttpExchange httpExchange, String response) throws IOException {
         sendResponse(httpExchange, 200, response);
     }
@@ -39,7 +38,7 @@ public abstract class AbstractWebModule implements WebModule {
     }
 
     boolean isValid31BitUnsignedInteger(long userId) {
-        return userId >= 0 && userId <= MAX_USER_ID;
+        return userId >= 0 && userId <= Settings.MAX_USER_ID;
     }
 
     String getBody(HttpExchange httpExchange) {
